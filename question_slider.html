@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>滑块</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <link rel="stylesheet" href="slider.min.css">
+</head>
+<body>
+<div id="selfContainer" class="selfContainer">
+    <div class="container">
+        <div class="slider">
+            <div id="slider-line" class="slider-line">
+                <div ref="sliderLineOn" class="slider-line-on">
+                    <div id="slider-box" ref="sliderBox" class="slider-box">
+                        <div ref="resultNum" class="result-num">{{resultNum}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-num flex">
+                <dd class="flex1 text-left">0</dd>
+                <dd class="flex1 text-right">10</dd>
+            </div>
+            <div class="slider-result-num">病情得分<span ref="resultBoxNum">{{resultNum}}</span>分</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="font-size.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.min.js"></script>
+<script>
+    new Vue({
+        el: '#selfContainer',
+        data: {
+            resultNum: ''
+        },
+        created: function () {
+        },
+        methods: {
+            touchFn: function () {
+                var isTouchMove, startX, self = this;
+                var sliderBox = this.$refs.sliderBox;
+                var _dom = document.getElementById('slider-box');
+                var _domWidth = _dom.clientWidth;
+                var _lineWidth = document.getElementById('slider-line').clientWidth;
+                var domLeft = _dom.getBoundingClientRect().left;//圆点距离屏幕左边的距离
+                sliderBox.addEventListener('touchstart', function (e) {
+                    var touches = e.touches[0];
+                    startX = touches.clientX;
+                    isTouchMove = false;
+                }, false);
+                sliderBox.addEventListener('touchmove', function (e) {
+                    isTouchMove = true;
+                    var _num = e.touches[0].clientX - domLeft - _domWidth;
+                    var _shuliangNum;
+                    if (_num > 0 && _num < _lineWidth) {
+                        var _resultNum = ((_num / _lineWidth) * 100).toFixed(0);
+                        var _shuliang = _shuliangNum = ((_num / _lineWidth) * 10).toFixed(1);
+                        self.$refs.sliderLineOn.style.width = _resultNum + '%';
+                        if (_shuliang > 9.5) {
+                            _shuliang = '';
+                            _shuliangNum = 10;
+                        } else if (_shuliang < .3) {
+                            _shuliang = '';
+                            _shuliangNum = 0;
+                        }
+                        self.$refs.resultNum.innerHTML = _shuliang;
+                        self.$refs.resultBoxNum.innerHTML = _shuliangNum;
+                    }
+                }, false);
+                sliderBox.addEventListener('touchend', function (e) {
+                    isTouchMove = false;
+                }, false)
+            }
+        },
+        mounted: function () {
+            this.touchFn();
+        }
+    });
+</script>
+</body>
+</html>
